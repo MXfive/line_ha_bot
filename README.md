@@ -5,6 +5,10 @@ A Home Assistant custom integration that connects your LINE Official Account to 
 [![hacs_badge](https://img.shields.io/badge/HACS-Custom-orange.svg)](https://github.com/hacs/integration)
 ![HA Version](https://img.shields.io/badge/HA-2024.11%2B-blue)
 
+
+
+> [!NOTE]
+> This is pre-release. I will not create a package until it is feature complete and fully documented. Should be completed by mid-April 2026.
 ---
 
 ## Index
