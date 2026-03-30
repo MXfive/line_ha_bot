@@ -1,0 +1,165 @@
+send_message:
+  name: Send LINE message
+  description: Send a message to one or more LINE recipients, with optional image, sticker, flex card, or location.
+  fields:
+    entity_id:
+      name: Entity
+      description: The LINE Bot notify entity to send the message through.
+      required: true
+      example: notify.line_bot_steve
+      selector:
+        entity:
+          domain: notify
+    message:
+      name: Message
+      description: The text message to send. Optional if flex_message or a location is provided.
+      required: false
+      example: Front door opened.
+      selector:
+        text:
+    title:
+      name: Title
+      description: Optional title, prepended to the message.
+      required: false
+      example: Security Alert
+      selector:
+        text:
+    image_url:
+      name: Image URL
+      description: URL of an image to send (must be HTTPS). Takes priority over sticker and location if provided.
+      required: false
+      example: https://example.com/snapshot.jpg
+      selector:
+        text:
+    sticker_package_id:
+      name: Sticker package ID
+      description: LINE sticker package ID.
+      required: false
+      example: "1"
+      selector:
+        text:
+    sticker_id:
+      name: Sticker ID
+      description: LINE sticker ID within the package.
+      required: false
+      example: "1"
+      selector:
+        text:
+    reply_token:
+      name: Reply token
+      description: Reply token from a line_bot_message_received event. Uses the free Reply API instead of Push. Valid for 30 seconds and single-use only.
+      required: false
+      example: "{{ trigger.event.data.reply_token }}"
+      selector:
+        text:
+    flex_message:
+      name: Flex message
+      description: Raw LINE flex message JSON object (the contents field). If provided, takes priority over image, location, and sticker. A plain text message can still be sent alongside it.
+      required: false
+      selector:
+        object:
+    flex_alt_text:
+      name: Flex alt text
+      description: Fallback text shown in notifications and on devices that do not support flex messages. Defaults to "LINE message".
+      required: false
+      example: You have a new alert
+      selector:
+        text:
+    location_title:
+      name: Location title
+      description: Name of the location shown in LINE (e.g. Home, Office). Defaults to "Location" if not provided.
+      required: false
+      example: Home
+      selector:
+        text:
+    location_address:
+      name: Location address
+      description: Street address of the location.
+      required: false
+      example: 123 Main St, Bangkok
+      selector:
+        text:
+    location_latitude:
+      name: Latitude
+      description: Latitude of the location. Required if sending a location message.
+      required: false
+      example: "13.7563"
+      selector:
+        number:
+          min: -90
+          max: 90
+          step: any
+          mode: box
+    location_longitude:
+      name: Longitude
+      description: Longitude of the location. Required if sending a location message.
+      required: false
+      example: "100.5018"
+      selector:
+        number:
+          min: -180
+          max: 180
+          step: any
+          mode: box
+    template_type:
+      name: Template type
+      description: Send a button or confirm template message. Use "buttons" for up to 4 buttons with optional image and title, or "confirm" for exactly 2 buttons.
+      required: false
+      example: confirm
+      selector:
+        select:
+          options:
+            - buttons
+            - confirm
+    template_title:
+      name: Template title
+      description: Title shown at the top of a buttons template. Not used for confirm templates.
+      required: false
+      example: Motion detected
+      selector:
+        text:
+    template_default_url:
+      name: Template default URL
+      description: URI opened when the user taps the card body of a buttons template (not a button). Not used for confirm templates.
+      required: false
+      example: https://example.com
+      selector:
+        text:
+    buttons:
+      name: Buttons
+      description: "List of buttons for template messages. Each button needs: label (text shown), action (message/postback/uri), data (text sent / postback data / URL). Postback buttons also accept an optional display_text field shown in the chat after tapping."
+      required: false
+      selector:
+        object:
+    audio_url:
+      name: Audio URL
+      description: URL of an M4A audio file to send. Takes priority over video, file, and sticker if provided.
+      required: false
+      example: https://example.com/audio.m4a
+      selector:
+        text:
+    audio_duration:
+      name: Audio duration
+      description: Duration of the audio in milliseconds. Required when sending audio. Must be a positive integer.
+      required: false
+      example: "5000"
+      selector:
+        number:
+          min: 0
+          max: 600000
+          step: 1
+          mode: box
+    video_url:
+      name: Video URL
+      description: URL of a video file to send. Takes priority over file and sticker if provided.
+      required: false
+      example: https://example.com/video.mp4
+      selector:
+        text:
+    video_preview_url:
+      name: Video preview URL
+      description: URL of a preview image for the video.
+      required: false
+      example: https://example.com/preview.jpg
+      selector:
+        text:

@@ -1,0 +1,15 @@
+{
+  "domain": "line_ha_bot",
+  "name": "LINE Bot",
+  "version": "0.9.0",
+  "config_flow": true,
+  "documentation": "https://github.com/sfox38/line_ha_bot",
+  "issue_tracker": "https://github.com/sfox38/line_ha_bot/issues",
+  "iot_class": "cloud_push",
+  "requirements": [],
+  "dependencies": [],
+  "codeowners": [
+    "@sfox38"
+  ],
+  "homeassistant": "2024.11.0"
+}
