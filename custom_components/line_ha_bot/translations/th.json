@@ -1,0 +1,88 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "LINE Bot",
+        "description": "กรอกข้อมูลรับรอง LINE Messaging API ของคุณ ทั้งสองรายการสามารถพบได้ใน LINE Developers Console ในแท็บ Basic settings ของช่องของคุณ",
+        "data": {
+          "channel_access_token": "Channel Access Token",
+          "channel_secret": "Channel Secret"
+        }
+      },
+      "webhook_info": {
+        "title": "ตั้งค่า Webhook",
+        "description": "เกือบเสร็จแล้ว คัดลอก URL ด้านล่างแล้ววางใน LINE Developers Console\n\n**Webhook URL:**\n`{webhook_url}`\n\n1. ใน LINE Developers Console เปิดแท็บ Messaging API ของช่องของคุณ\n2. ภายใต้ Webhook settings วาง URL ด้านบน\n3. เปิดใช้งาน Use webhook\n4. คลิก Verify ควรแสดงผลสำเร็จ\n5. ติ๊กช่องด้านล่างแล้วคลิก Submit\n\nหลังจากตั้งค่าเสร็จสิ้น เพิ่มผู้รับผ่านไอคอนเฟืองการตั้งค่าบนการ์ดการผสานรวม",
+        "data": {
+          "confirmed": "ฉันได้ตั้งค่า Webhook URL และตรวจสอบสำเร็จแล้ว"
+        }
+      }
+    },
+    "error": {
+      "invalid_token": "ไม่สามารถยืนยัน Channel Access Token ได้ กรุณาตรวจสอบแล้วลองอีกครั้ง",
+      "invalid_secret": "Channel Secret ต้องไม่ว่างเปล่า",
+      "cannot_connect": "ไม่สามารถเชื่อมต่อ LINE API ได้ ตรวจสอบการเชื่อมต่อเครือข่ายของคุณ"
+    },
+    "abort": {
+      "already_configured": "LINE Bot ได้รับการกำหนดค่าแล้ว",
+      "no_external_url": "ไม่ได้กำหนดค่า URL ภายนอกสำหรับ Home Assistant กรุณาตั้งค่า URL ภายนอกใน Settings, System, Network แล้วลองอีกครั้ง"
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "ตัวเลือก LINE Messaging",
+        "data": {
+          "action": "คุณต้องการทำอะไร?"
+        }
+      },
+      "add_recipient_select": {
+        "title": "เพิ่มผู้รับ",
+        "description": "เลือกบุคคลที่ต้องการเพิ่มและตั้งชื่อใน Home Assistant",
+        "data": {
+          "user_id": "บัญชี LINE",
+          "recipient_name": "ชื่อใน Home Assistant (เช่น สมชาย, มาลี, น้องเล็ก)"
+        }
+      },
+      "remove_recipient": {
+        "title": "ลบผู้รับ",
+        "data": {
+          "recipient_name": "ผู้รับที่ต้องการลบ"
+        }
+      },
+      "rotate_token": {
+        "title": "อัปเดตข้อมูลรับรอง",
+        "description": "อัปเดต Channel Access Token และ/หรือ Channel Secret ทั้งสองฟิลด์จะถูกกรอกค่าปัจจุบันไว้แล้ว\n\nหมายเหตุ: Channel Access Token จะได้รับการยืนยันอัตโนมัติ Channel Secret ไม่สามารถยืนยันผ่าน LINE API ได้ หากผู้รับหยุดถูกค้นพบหลังจากอัปเดต ให้ตรวจสอบ Channel Secret อีกครั้ง",
+        "data": {
+          "channel_access_token": "Channel Access Token",
+          "channel_secret": "Channel Secret"
+        }
+      },
+      "select_recipient": {
+        "title": "เลือกผู้รับ",
+        "description": "เลือกบัญชีที่ต้องการเพิ่ม ป้อนชื่อ entity แบบ ASCII สำหรับ Home Assistant และชื่อที่แสดงผลที่ต้องการ (รองรับ emoji และทุกภาษา) เลือก '[ล้างรายการที่รอดำเนินการทั้งหมด]' เพื่อยกเลิกบัญชีที่บันทึกไว้ทั้งหมด",
+        "data": {
+          "user_id": "บัญชี LINE",
+          "recipient_name": "ชื่อใน Home Assistant (เช่น สมชาย, มาลี, น้องเล็ก)",
+          "add_another": "เพิ่มผู้รับอีกคนหลังจากบันทึกรายการนี้",
+          "friendly_name": "ชื่อที่แสดงผล (ทุกภาษาหรือ emoji)",
+          "clear_pending": "[ล้างรายการที่รอดำเนินการทั้งหมด]"
+        }
+      }
+    },
+    "error": {
+      "invalid_token": "ไม่สามารถยืนยัน Channel Access Token ได้ กรุณาตรวจสอบแล้วลองอีกครั้ง",
+      "no_message_received": "ยังไม่ได้รับข้อความใดๆ ตรวจสอบให้แน่ใจว่าบุคคลนั้นได้เพิ่มบอทของคุณเป็นเพื่อนและส่งข้อความแล้ว จากนั้นคลิก Submit อีกครั้ง",
+      "duplicate_name": "มีผู้รับที่มีชื่อนี้ (หรือชื่อที่คล้ายกันมาก) อยู่แล้ว",
+      "duplicate_user_id": "บัญชี LINE นี้ถูกเพิ่มไปแล้ว",
+      "cannot_connect": "ไม่สามารถเชื่อมต่อ LINE API ได้ ตรวจสอบการเชื่อมต่อเครือข่ายของคุณ",
+      "invalid_name": "ชื่อต้องประกอบด้วยตัวอักษร ตัวเลข ช่องว่าง เครื่องหมายยัติภังค์ และขีดล่างเท่านั้น ไม่รองรับ emoji หรืออักขระที่ไม่ใช่ภาษาอังกฤษ",
+      "invalid_secret": "Channel Secret ต้องไม่ว่างเปล่า"
+    },
+    "abort": {
+      "no_recipients": "ไม่มีผู้รับที่จะลบ"
+    },
+    "progress": {
+      "waiting_for_message": "ให้ผู้รับเพิ่มบอทของคุณเป็นเพื่อนใน LINE และส่งข้อความใดๆ เมื่อได้รับข้อความแล้ว หน้าจอนี้จะดำเนินการต่อไปยังขั้นตอนถัดไปโดยอัตโนมัติ"
+    }
+  }
+}

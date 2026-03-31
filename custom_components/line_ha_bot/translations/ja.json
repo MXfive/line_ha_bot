@@ -1,0 +1,88 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "LINE Bot",
+        "description": "LINE Messaging APIの認証情報を入力してください。どちらもLINE Developers Consoleのチャネルの「Basic settings」タブで確認できます。",
+        "data": {
+          "channel_access_token": "チャネルアクセストークン",
+          "channel_secret": "チャネルシークレット"
+        }
+      },
+      "webhook_info": {
+        "title": "Webhookの設定",
+        "description": "もう少しで完了です。以下のURLをコピーしてLINE Developers Consoleに貼り付けてください。\n\n**Webhook URL:**\n`{webhook_url}`\n\n1. LINE Developers Consoleでチャネルの「Messaging API」タブを開きます。\n2. Webhook settingsの下に上記のURLを貼り付けます。\n3. 「Use webhook」を有効にします。\n4. 「Verify」をクリックします。成功と表示されるはずです。\n5. 下のチェックボックスにチェックを入れて「Submit」をクリックします。\n\n設定完了後、インテグレーションカードの設定ギアアイコンから受信者を追加できます。",
+        "data": {
+          "confirmed": "Webhook URLを設定し、正常に確認しました"
+        }
+      }
+    },
+    "error": {
+      "invalid_token": "チャネルアクセストークンを確認できませんでした。確認してもう一度お試しください。",
+      "invalid_secret": "チャネルシークレットは空にできません。",
+      "cannot_connect": "LINE APIへの接続に失敗しました。ネットワーク接続を確認してください。"
+    },
+    "abort": {
+      "already_configured": "LINE Botはすでに設定されています。",
+      "no_external_url": "Home AssistantのURL（外部）が設定されていません。「設定」→「システム」→「ネットワーク」で外部URLを設定してからもう一度お試しください。"
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "LINEメッセージングオプション",
+        "data": {
+          "action": "何をしますか？"
+        }
+      },
+      "add_recipient_select": {
+        "title": "受信者を追加",
+        "description": "追加する人を選択して、Home Assistantでの名前を設定してください。",
+        "data": {
+          "user_id": "LINEアカウント",
+          "recipient_name": "Home Assistantでの名前（例：田中、花子、太郎）"
+        }
+      },
+      "remove_recipient": {
+        "title": "受信者を削除",
+        "data": {
+          "recipient_name": "削除する受信者"
+        }
+      },
+      "rotate_token": {
+        "title": "認証情報を更新",
+        "description": "チャネルアクセストークンおよび/またはチャネルシークレットを更新します。両方のフィールドには現在の値が事前に入力されています。\n\n注意：チャネルアクセストークンは自動的に確認されます。チャネルシークレットはLINE APIでは確認できません。更新後に受信者が見つからなくなった場合は、チャネルシークレットを再確認してください。",
+        "data": {
+          "channel_access_token": "チャネルアクセストークン",
+          "channel_secret": "チャネルシークレット"
+        }
+      },
+      "select_recipient": {
+        "title": "受信者を選択",
+        "description": "追加するアカウントを選択してください。Home Assistant用のASCIIエンティティ名と、HAのUIに表示される表示名（絵文字や任意の言語をサポート）を入力してください。「[保留中をすべてクリア]」を選択すると、キャプチャされたアカウントをすべて破棄します。",
+        "data": {
+          "user_id": "LINEアカウント",
+          "recipient_name": "Home Assistantでの名前（例：田中、花子、太郎）",
+          "add_another": "この受信者を保存した後に別の受信者を追加する",
+          "friendly_name": "表示名（任意の言語または絵文字）",
+          "clear_pending": "[保留中をすべてクリア]"
+        }
+      }
+    },
+    "error": {
+      "invalid_token": "チャネルアクセストークンを確認できませんでした。確認してもう一度お試しください。",
+      "no_message_received": "まだメッセージを受信していません。その人がボットを友達追加してメッセージを送信したことを確認してから、もう一度「Submit」をクリックしてください。",
+      "duplicate_name": "この名前（または非常に似た名前）の受信者がすでに存在します。",
+      "duplicate_user_id": "このLINEアカウントはすでに追加されています。",
+      "cannot_connect": "LINE APIへの接続に失敗しました。ネットワーク接続を確認してください。",
+      "invalid_name": "名前には英数字、スペース、ハイフン、アンダースコアのみ使用できます。絵文字や非英語文字は使用できません。",
+      "invalid_secret": "チャネルシークレットは空にできません。"
+    },
+    "abort": {
+      "no_recipients": "削除する受信者がいません。"
+    },
+    "progress": {
+      "waiting_for_message": "受信者がLINEでボットを友達追加してメッセージを送信してください。メッセージを受信すると、この画面は自動的に次のステップに進みます。"
+    }
+  }
+}

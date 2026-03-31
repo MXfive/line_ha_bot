@@ -6,7 +6,7 @@ send_message:
       name: Entity
       description: The LINE Bot notify entity to send the message through.
       required: true
-      example: notify.line_bot_steve
+      example: notify.line_bot_david
       selector:
         entity:
           domain: notify
@@ -163,3 +163,9 @@ send_message:
       example: https://example.com/preview.jpg
       selector:
         text:
+    quick_replies:
+      name: Quick replies
+      description: "List of quick reply chips shown above the LINE keyboard after the message. They disappear once tapped. Work with any message type. Each item needs: label (text on the chip), action (message/postback/uri), data (text sent / postback data / URL). Postback items also accept an optional display_text shown in the chat after tapping."
+      required: false
+      selector:
+        object:

@@ -1,0 +1,88 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "LINE Bot",
+        "description": "LINE Messaging API 자격 증명을 입력하세요. 두 가지 모두 채널의 Basic settings 탭에 있는 LINE Developers Console에서 확인할 수 있습니다.",
+        "data": {
+          "channel_access_token": "채널 액세스 토큰",
+          "channel_secret": "채널 시크릿"
+        }
+      },
+      "webhook_info": {
+        "title": "Webhook 설정",
+        "description": "거의 완료되었습니다. 아래 URL을 복사하여 LINE Developers Console에 붙여넣으세요.\n\n**Webhook URL:**\n`{webhook_url}`\n\n1. LINE Developers Console에서 채널의 Messaging API 탭을 여세요.\n2. Webhook settings 아래에 위의 URL을 붙여넣으세요.\n3. Use webhook을 활성화하세요.\n4. Verify를 클릭하세요. 성공이 표시되어야 합니다.\n5. 아래 체크박스를 선택하고 Submit을 클릭하세요.\n\n설정이 완료된 후 통합 카드의 설정 기어 아이콘을 통해 수신자를 추가할 수 있습니다.",
+        "data": {
+          "confirmed": "Webhook URL을 설정하고 성공적으로 확인했습니다"
+        }
+      }
+    },
+    "error": {
+      "invalid_token": "채널 액세스 토큰을 확인할 수 없습니다. 확인 후 다시 시도하세요.",
+      "invalid_secret": "채널 시크릿은 비워둘 수 없습니다.",
+      "cannot_connect": "LINE API에 연결하지 못했습니다. 네트워크 연결을 확인하세요."
+    },
+    "abort": {
+      "already_configured": "LINE Bot이 이미 구성되어 있습니다.",
+      "no_external_url": "Home Assistant에 외부 URL이 구성되어 있지 않습니다. 설정, 시스템, 네트워크에서 외부 URL을 설정하고 다시 시도하세요."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "LINE 메시징 옵션",
+        "data": {
+          "action": "무엇을 하시겠습니까?"
+        }
+      },
+      "add_recipient_select": {
+        "title": "수신자 추가",
+        "description": "추가할 사람을 선택하고 Home Assistant에서 사용할 이름을 지정하세요.",
+        "data": {
+          "user_id": "LINE 계정",
+          "recipient_name": "Home Assistant에서의 이름 (예: 철수, 영희, 민준)"
+        }
+      },
+      "remove_recipient": {
+        "title": "수신자 제거",
+        "data": {
+          "recipient_name": "제거할 수신자"
+        }
+      },
+      "rotate_token": {
+        "title": "자격 증명 업데이트",
+        "description": "채널 액세스 토큰 및/또는 채널 시크릿을 업데이트하세요. 두 필드 모두 현재 값이 미리 입력되어 있습니다.\n\n참고: 채널 액세스 토큰은 자동으로 확인됩니다. 채널 시크릿은 LINE API로 확인할 수 없습니다. 업데이트 후 수신자가 검색되지 않으면 채널 시크릿을 다시 확인하세요.",
+        "data": {
+          "channel_access_token": "채널 액세스 토큰",
+          "channel_secret": "채널 시크릿"
+        }
+      },
+      "select_recipient": {
+        "title": "수신자 선택",
+        "description": "추가할 계정을 선택하세요. Home Assistant용 ASCII 엔티티 이름과 HA UI에 표시될 표시 이름(이모지 및 모든 언어 지원)을 입력하세요. '[대기 중인 항목 모두 지우기]'를 선택하면 캡처된 모든 계정을 삭제합니다.",
+        "data": {
+          "user_id": "LINE 계정",
+          "recipient_name": "Home Assistant에서의 이름 (예: 철수, 영희, 민준)",
+          "add_another": "이 수신자를 저장한 후 다른 수신자 추가",
+          "friendly_name": "표시 이름 (모든 언어 또는 이모지)",
+          "clear_pending": "[대기 중인 항목 모두 지우기]"
+        }
+      }
+    },
+    "error": {
+      "invalid_token": "채널 액세스 토큰을 확인할 수 없습니다. 확인 후 다시 시도하세요.",
+      "no_message_received": "아직 메시지를 받지 못했습니다. 상대방이 봇을 친구로 추가하고 메시지를 보냈는지 확인한 후 Submit을 다시 클릭하세요.",
+      "duplicate_name": "이 이름(또는 매우 유사한 이름)의 수신자가 이미 존재합니다.",
+      "duplicate_user_id": "이 LINE 계정은 이미 추가되어 있습니다.",
+      "cannot_connect": "LINE API에 연결하지 못했습니다. 네트워크 연결을 확인하세요.",
+      "invalid_name": "이름에는 영문자, 숫자, 공백, 하이픈, 밑줄만 사용할 수 있습니다. 이모지나 비영어 문자는 사용할 수 없습니다.",
+      "invalid_secret": "채널 시크릿은 비워둘 수 없습니다."
+    },
+    "abort": {
+      "no_recipients": "제거할 수신자가 없습니다."
+    },
+    "progress": {
+      "waiting_for_message": "수신자가 LINE에서 봇을 친구로 추가하고 메시지를 보내도록 하세요. 메시지를 받으면 이 화면이 자동으로 다음 단계로 진행됩니다."
+    }
+  }
+}

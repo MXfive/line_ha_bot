@@ -1,0 +1,88 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "LINE Bot",
+        "description": "Masukkan kredensial LINE Messaging API Anda. Keduanya dapat ditemukan di LINE Developers Console pada tab Basic settings saluran Anda.",
+        "data": {
+          "channel_access_token": "Channel Access Token",
+          "channel_secret": "Channel Secret"
+        }
+      },
+      "webhook_info": {
+        "title": "Atur Webhook",
+        "description": "Hampir selesai. Salin URL di bawah dan tempelkan ke LINE Developers Console.\n\n**Webhook URL:**\n`{webhook_url}`\n\n1. Di LINE Developers Console, buka tab Messaging API saluran Anda.\n2. Di bawah Webhook settings, tempelkan URL di atas.\n3. Aktifkan Use webhook.\n4. Klik Verify. Seharusnya menampilkan sukses.\n5. Centang kotak di bawah dan klik Submit.\n\nSetelah pengaturan selesai, tambahkan penerima melalui ikon roda gigi pada kartu integrasi.",
+        "data": {
+          "confirmed": "Saya telah mengatur URL webhook dan memverifikasinya dengan sukses"
+        }
+      }
+    },
+    "error": {
+      "invalid_token": "Tidak dapat memverifikasi channel access token. Periksa dan coba lagi.",
+      "invalid_secret": "Channel secret tidak boleh kosong.",
+      "cannot_connect": "Gagal terhubung ke LINE API. Periksa koneksi jaringan Anda."
+    },
+    "abort": {
+      "already_configured": "LINE Bot sudah dikonfigurasi.",
+      "no_external_url": "Tidak ada URL eksternal yang dikonfigurasi untuk Home Assistant. Silakan atur URL eksternal di Pengaturan, Sistem, Jaringan dan coba lagi."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Opsi LINE Messaging",
+        "data": {
+          "action": "Apa yang ingin Anda lakukan?"
+        }
+      },
+      "add_recipient_select": {
+        "title": "Tambah Penerima",
+        "description": "Pilih orang yang akan ditambahkan dan beri nama di Home Assistant.",
+        "data": {
+          "user_id": "Akun LINE",
+          "recipient_name": "Nama di Home Assistant (mis. Budi, Siti, Andi)"
+        }
+      },
+      "remove_recipient": {
+        "title": "Hapus Penerima",
+        "data": {
+          "recipient_name": "Penerima yang akan dihapus"
+        }
+      },
+      "rotate_token": {
+        "title": "Perbarui Kredensial",
+        "description": "Perbarui Channel Access Token dan/atau Channel Secret Anda. Kedua kolom diisi dengan nilai saat ini.\n\nCatatan: Channel Access Token diverifikasi secara otomatis. Channel Secret tidak dapat diverifikasi melalui LINE API. Jika penerima berhenti ditemukan setelah pembaruan, periksa kembali channel secret Anda.",
+        "data": {
+          "channel_access_token": "Channel Access Token",
+          "channel_secret": "Channel Secret"
+        }
+      },
+      "select_recipient": {
+        "title": "Pilih Penerima",
+        "description": "Pilih akun yang akan ditambahkan. Masukkan nama entitas ASCII untuk Home Assistant dan nama tampilan opsional yang ditampilkan di UI HA (mendukung emoji dan bahasa apa pun). Pilih '[Hapus semua yang tertunda]' untuk membuang semua akun yang ditangkap.",
+        "data": {
+          "user_id": "Akun LINE",
+          "recipient_name": "Nama di Home Assistant (mis. Budi, Siti, Andi)",
+          "add_another": "Tambah penerima lain setelah menyimpan yang ini",
+          "friendly_name": "Nama tampilan (bahasa apa pun atau emoji)",
+          "clear_pending": "[Hapus semua yang tertunda]"
+        }
+      }
+    },
+    "error": {
+      "invalid_token": "Tidak dapat memverifikasi channel access token. Periksa dan coba lagi.",
+      "no_message_received": "Belum ada pesan yang diterima. Pastikan orang tersebut telah menambahkan bot Anda sebagai teman dan mengirim pesan, lalu klik Submit lagi.",
+      "duplicate_name": "Penerima dengan nama ini (atau nama yang sangat mirip) sudah ada.",
+      "duplicate_user_id": "Akun LINE ini sudah ditambahkan.",
+      "cannot_connect": "Gagal terhubung ke LINE API. Periksa koneksi jaringan Anda.",
+      "invalid_name": "Nama hanya boleh mengandung huruf, angka, spasi, tanda hubung, dan garis bawah. Tidak ada emoji atau karakter non-Inggris.",
+      "invalid_secret": "Channel secret tidak boleh kosong."
+    },
+    "abort": {
+      "no_recipients": "Tidak ada penerima yang dapat dihapus."
+    },
+    "progress": {
+      "waiting_for_message": "Minta penerima menambahkan bot Anda sebagai teman di LINE dan mengirim pesan apa pun. Setelah pesan mereka diterima, layar ini akan otomatis melanjutkan ke langkah berikutnya."
+    }
+  }
+}

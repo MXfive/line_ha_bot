@@ -78,6 +78,7 @@ from .const import (
     ATTR_TEMPLATE_TITLE,
     ATTR_TEMPLATE_DEFAULT_URL,
     ATTR_BUTTONS,
+    ATTR_QUICK_REPLIES,
     ATTR_AUDIO_URL,
     ATTR_AUDIO_DURATION,
     ATTR_VIDEO_URL,
@@ -91,6 +92,14 @@ from .const import (
     LINE_WEBHOOK_PATH,
     PENDING_USERS_KEY,
     RECIPIENTS_KEY,
+    EVENT_MESSAGE_RECEIVED,
+    EVENT_SEND_FAILED,
+    SERVICE_SEND_MESSAGE,
+    KEY_VIEW_REGISTERED,
+    KEY_CONFIG_SNAPSHOT,
+    DEFAULT_FLEX_ALT_TEXT,
+    DEFAULT_LOCATION_TITLE,
+    DEFAULT_ACTION_LABEL,
 )
 
 _LOGGER = logging.getLogger(__name__)
@@ -107,9 +116,9 @@ async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
     in the LINE Developers Console.
     """
     hass.data.setdefault(DOMAIN, {})
-    if not hass.data[DOMAIN].get("view_registered"):
+    if not hass.data[DOMAIN].get(KEY_VIEW_REGISTERED):
         hass.http.register_view(LineMessagingWebhookView(hass))
-        hass.data[DOMAIN]["view_registered"] = True
+        hass.data[DOMAIN][KEY_VIEW_REGISTERED] = True
         _LOGGER.debug("LINE Bot webhook registered at %s", LINE_WEBHOOK_PATH)
     return True
 
@@ -119,22 +128,30 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
     Called once per config entry on HA startup (or after a reload). Registers
     the webhook view if not already registered (defensive, in case async_setup
-    was not called), initialises per-entry runtime data, sets up the notify and
-    sensor platforms, registers the line_ha_bot.send_message custom service, and
-    registers an update listener to reload on options changes.
+    was not called), initialises per-entry runtime data (loading any persisted
+    pending_users from config entry data), sets up the notify and sensor platforms,
+    registers the line_ha_bot.send_message custom service, and registers an update
+    listener to reload on options changes.
     """
     hass.data.setdefault(DOMAIN, {})
-    if not hass.data[DOMAIN].get("view_registered"):
+    if not hass.data[DOMAIN].get(KEY_VIEW_REGISTERED):
         hass.http.register_view(LineMessagingWebhookView(hass))
-        hass.data[DOMAIN]["view_registered"] = True
+        hass.data[DOMAIN][KEY_VIEW_REGISTERED] = True
         _LOGGER.debug("LINE Bot webhook registered at %s", LINE_WEBHOOK_PATH)
 
     # Per-entry runtime dict. pending_users holds LINE user IDs captured by
-    # the webhook that have not yet been confirmed as recipients.
-    # Use setdefault so messages captured before or between reloads are preserved.
-    # Only initialise the dict if it does not already exist.
+    # the webhook that have not yet been confirmed as recipients. Load from
+    # config entry data so captures survive HA restarts.
     hass.data[DOMAIN].setdefault(entry.entry_id, {})
-    hass.data[DOMAIN][entry.entry_id].setdefault(PENDING_USERS_KEY, {})
+    persisted_pending = dict(entry.data.get(PENDING_USERS_KEY, {}))
+    hass.data[DOMAIN][entry.entry_id][PENDING_USERS_KEY] = persisted_pending
+    # Snapshot of reload-relevant keys used by the update listener to detect
+    # whether a reload is actually needed (vs a pending_users-only write).
+    hass.data[DOMAIN][entry.entry_id][KEY_CONFIG_SNAPSHOT] = {
+        CONF_CHANNEL_ACCESS_TOKEN: entry.data.get(CONF_CHANNEL_ACCESS_TOKEN),
+        CONF_CHANNEL_SECRET: entry.data.get(CONF_CHANNEL_SECRET),
+        RECIPIENTS_KEY: dict(entry.data.get(RECIPIENTS_KEY, {})),
+    }
 
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
     entry.async_on_unload(entry.add_update_listener(async_update_listener))
@@ -149,7 +166,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         """Fire a line_bot_send_failed event on the HA bus."""
         import time
         hass.bus.async_fire(
-            "line_bot_send_failed",
+            EVENT_SEND_FAILED,
             {
                 "entity_id": entity_id,
                 "recipient_name": recipient_name,
@@ -182,7 +199,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         sticker_id = call.data.get(ATTR_STICKER_ID)
         reply_token = call.data.get(ATTR_REPLY_TOKEN)
         flex_message = call.data.get(ATTR_FLEX_MESSAGE)
-        flex_alt_text = call.data.get(ATTR_FLEX_ALT_TEXT, "LINE message")
+        flex_alt_text = call.data.get(ATTR_FLEX_ALT_TEXT, DEFAULT_FLEX_ALT_TEXT)
         location_title = call.data.get(ATTR_LOCATION_TITLE)
         location_address = call.data.get(ATTR_LOCATION_ADDRESS)
         location_latitude = call.data.get(ATTR_LOCATION_LATITUDE)
@@ -196,6 +213,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         template_title = call.data.get(ATTR_TEMPLATE_TITLE)
         template_default_url = call.data.get(ATTR_TEMPLATE_DEFAULT_URL)
         buttons = call.data.get(ATTR_BUTTONS, [])
+        quick_replies = call.data.get(ATTR_QUICK_REPLIES, [])
 
         registry = er.async_get(hass)
         platform_entries = er.async_entries_for_config_entry(registry, entry.entry_id)
@@ -255,7 +273,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
                 if template_default_url:
                     template["defaultAction"] = {
                         "type": "uri",
-                        "label": "Open",
+                        "label": DEFAULT_ACTION_LABEL,
                         "uri": template_default_url,
                     }
 
@@ -287,7 +305,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
             elif has_location:
                 messages.append({
                     "type": "location",
-                    "title": location_title or "Location",
+                    "title": location_title or DEFAULT_LOCATION_TITLE,
                     "address": location_address or "",
                     "latitude": location_latitude,
                     "longitude": location_longitude,
@@ -320,6 +338,43 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         if not messages:
             _LOGGER.error("LINE Bot send_message: no message content provided")
             return
+
+        # Attach quick replies to the last message object if provided.
+        # Quick reply chips appear above the LINE keyboard after the message
+        # and disappear once tapped. Supported on all message types.
+        if quick_replies:
+            built_qr = []
+            for qr in quick_replies:
+                action_type = qr.get("action", "message")
+                if action_type == "uri":
+                    built_qr.append({
+                        "type": "action",
+                        "action": {
+                            "type": "uri",
+                            "label": qr["label"],
+                            "uri": qr["data"],
+                        },
+                    })
+                elif action_type == "postback":
+                    built_qr.append({
+                        "type": "action",
+                        "action": {
+                            "type": "postback",
+                            "label": qr["label"],
+                            "data": qr["data"],
+                            "displayText": qr.get("display_text", qr["label"]),
+                        },
+                    })
+                else:
+                    built_qr.append({
+                        "type": "action",
+                        "action": {
+                            "type": "message",
+                            "label": qr["label"],
+                            "text": qr["data"],
+                        },
+                    })
+            messages[-1]["quickReply"] = {"items": built_qr}
 
         headers = {
             "Authorization": f"Bearer {token}",
@@ -393,7 +448,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
     hass.services.async_register(
         DOMAIN,
-        "send_message",
+        SERVICE_SEND_MESSAGE,
         handle_send_message,
         schema=vol.Schema({
             vol.Required("entity_id"): vol.Any(str, [str]),
@@ -424,6 +479,14 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
             vol.Optional(ATTR_AUDIO_DURATION): vol.All(vol.Coerce(int), vol.Range(min=1)),
             vol.Optional(ATTR_VIDEO_URL): str,
             vol.Optional(ATTR_VIDEO_PREVIEW_URL): str,
+            vol.Optional(ATTR_QUICK_REPLIES): [
+                vol.Schema({
+                    vol.Required("label"): str,
+                    vol.Required("action"): vol.In(["message", "postback", "uri"]),
+                    vol.Required("data"): str,
+                    vol.Optional("display_text"): str,
+                })
+            ],
         }),
     )
 
@@ -440,16 +503,30 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     unload_ok = await hass.config_entries.async_unload_platforms(entry, PLATFORMS)
     if unload_ok:
         hass.data[DOMAIN].pop(entry.entry_id, None)
-        hass.services.async_remove(DOMAIN, "send_message")
+        hass.services.async_remove(DOMAIN, SERVICE_SEND_MESSAGE)
     return unload_ok
 
 
 async def async_update_listener(hass: HomeAssistant, entry: ConfigEntry) -> None:
-    """Reload the entry when its options are updated.
+    """Reload the entry when credentials or recipients change.
 
-    Triggered whenever the config entry data is changed via the options flow
-    (e.g. adding or removing a recipient, rotating the token).
+    Triggered whenever the config entry data is changed. Compares the new entry
+    data against the snapshot taken at setup time. If only pending_users changed,
+    skips the reload since pending_users does not affect platforms or the service.
+    A full reload is only triggered when the token, secret, or recipients change.
     """
+    snapshot = (
+        hass.data.get(DOMAIN, {})
+        .get(entry.entry_id, {})
+        .get(KEY_CONFIG_SNAPSHOT, {})
+    )
+    if (
+        entry.data.get(CONF_CHANNEL_ACCESS_TOKEN) == snapshot.get(CONF_CHANNEL_ACCESS_TOKEN)
+        and entry.data.get(CONF_CHANNEL_SECRET) == snapshot.get(CONF_CHANNEL_SECRET)
+        and entry.data.get(RECIPIENTS_KEY) == snapshot.get(RECIPIENTS_KEY)
+    ):
+        _LOGGER.debug("LINE Bot: config unchanged (pending_users write only), skipping reload")
+        return
     await hass.config_entries.async_reload(entry.entry_id)
 
 
@@ -643,7 +720,7 @@ class LineMessagingWebhookView(HomeAssistantView):
                         if has_content and message_id else None
                     )
                     self.hass.bus.async_fire(
-                        "line_bot_message_received",
+                        EVENT_MESSAGE_RECEIVED,
                         {
                             "type": msg_type,
                             "user_id": user_id,
@@ -666,7 +743,7 @@ class LineMessagingWebhookView(HomeAssistantView):
                     )
                 elif event_type == "postback":
                     self.hass.bus.async_fire(
-                        "line_bot_message_received",
+                        EVENT_MESSAGE_RECEIVED,
                         {
                             "type": "postback",
                             "user_id": user_id,
@@ -713,6 +790,11 @@ class LineMessagingWebhookView(HomeAssistantView):
                 line_id,
                 pending[line_id],
             )
+            # Persist pending_users to config entry data so captures survive HA restarts.
+            # This writes only pending_users; the update listener detects this and skips reload.
+            new_data = dict(entry.data)
+            new_data[PENDING_USERS_KEY] = dict(pending)
+            self.hass.config_entries.async_update_entry(entry, data=new_data)
 
         return Response(text="OK", status=200)
 
