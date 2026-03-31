@@ -12,6 +12,7 @@ A Home Assistant custom integration that connects your LINE Official Account to 
 - [Features](#features)
 - [Supported Languages](#supported-languages)
 - [Prerequisites](#prerequisites)
+- [Supported Languages](#supported-languages)
 - [Installation](#installation)
 - [Setup](#setup)
 - [Recipients](#recipients)

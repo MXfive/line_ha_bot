@@ -6,7 +6,8 @@ DOMAIN = "line_ha_bot"
 # Config entry data keys - stored in the HA config entry after setup
 CONF_CHANNEL_ACCESS_TOKEN = "channel_access_token"  # LINE Messaging API long-lived token
 CONF_CHANNEL_SECRET = "channel_secret"              # Used for webhook signature verification
-CONF_RECIPIENT_NAME = "recipient_name"              # Human-friendly name chosen by the user
+CONF_RECIPIENT_NAME = "recipient_name"              # ASCII entity name chosen by the user
+CONF_FRIENDLY_NAME = "friendly_name"                # Free-form display name (supports emoji, unicode)
 CONF_USER_ID = "user_id"                            # LINE internal user ID (U + 32 hex chars)
 
 # LINE Messaging API endpoints
@@ -42,11 +43,31 @@ ATTR_TEMPLATE_TYPE = "template_type"            # Template type: "buttons" or "c
 ATTR_TEMPLATE_TITLE = "template_title"          # Title shown at top of buttons template
 ATTR_TEMPLATE_DEFAULT_URL = "template_default_url" # URI opened when user taps the card body
 ATTR_BUTTONS = "buttons"                        # List of button dicts for template messages
+ATTR_QUICK_REPLIES = "quick_replies"             # List of quick reply dicts shown above keyboard
 ATTR_AUDIO_URL = "audio_url"                    # URL of an M4A audio file to send
 ATTR_AUDIO_DURATION = "audio_duration"          # Duration of audio in milliseconds
 ATTR_VIDEO_URL = "video_url"                    # URL of a video file to send
 ATTR_VIDEO_PREVIEW_URL = "video_preview_url"    # URL of a preview image for the video
-ATTR_FILE_URL = "file_url"                      # URL of a file to send
+
+# HA bus event names
+EVENT_MESSAGE_RECEIVED = "line_bot_message_received"  # Fired when a known recipient sends a message
+EVENT_SEND_FAILED = "line_bot_send_failed"            # Fired when a send fails
+
+# Sentinel value for the options flow select_recipient dropdown
+CLEAR_PENDING = "__clear__"          # Sentinel: discard all captured pending users
+CLEAR_PENDING_LABEL = "Clear all pending"  # Display label for the CLEAR_PENDING sentinel option
+
+# Custom service name
+SERVICE_SEND_MESSAGE = "send_message"
+
+# hass.data[DOMAIN] runtime keys (not stored in config entry)
+KEY_VIEW_REGISTERED = "view_registered"   # Prevents double-registering the webhook view
+KEY_CONFIG_SNAPSHOT = "config_snapshot"   # Snapshot of reload-relevant config keys
+
+# Default strings used in message building
+DEFAULT_FLEX_ALT_TEXT = "LINE message"    # Fallback text for flex/template messages when none provided
+DEFAULT_LOCATION_TITLE = "Location"       # Default title for location messages
+DEFAULT_ACTION_LABEL = "Open"             # Default label for template defaultAction URI buttons
 
 # LINE quota and content API endpoints
 LINE_QUOTA_URL = "https://api.line.me/v2/bot/message/quota"

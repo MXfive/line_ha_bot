@@ -10,7 +10,7 @@ line_ha_bot.send_message service instead.
 Example automation action:
   action: notify.send_message
   target:
-    entity_id: notify.line_bot_steve
+    entity_id: notify.line_bot_david
   data:
     message: "Front door opened"
     title: "Security Alert"
@@ -33,6 +33,7 @@ from .const import (
     CONF_CHANNEL_ACCESS_TOKEN,
     LINE_PUSH_URL,
     RECIPIENTS_KEY,
+    EVENT_SEND_FAILED,
 )
 
 _LOGGER = logging.getLogger(__name__)
@@ -67,20 +68,25 @@ async def async_setup_entry(
                 registry.async_remove(entity_entry.entity_id)
 
     entities = [
-        LineMessagingNotifyEntity(hass, name, r["user_id"], token)
+        LineMessagingNotifyEntity(
+            hass, name, r.get("friendly_name", name), r["user_id"], token
+        )
         for name, r in recipients.items()
     ]
     async_add_entities(entities)
 
 
 class LineMessagingNotifyEntity(NotifyEntity):
-    """A notify entity representing a single LINE recipient.
+    """A notify entity representing a single LINE recipient (user or group).
 
     Entity ID format:  notify.line_bot_<recipient_name_slugified>
-    Unique ID format:  line_ha_bot_<line_user_id>
+    Unique ID format:  line_ha_bot_<line_user_id_or_group_id>
+    Display name:      friendly_name (may contain emoji and unicode)
 
-    The unique ID is based on the LINE user ID (not the recipient name) so that
-    renaming a recipient in the options flow does not create a duplicate entity.
+    The unique ID is based on the LINE ID (not the recipient name) so that
+    renaming a recipient does not create a duplicate entity. The friendly_name
+    is set as _attr_name so the HA UI shows the LINE display name rather than
+    the ASCII entity name.
     """
 
     _attr_has_entity_name = True
@@ -90,6 +96,7 @@ class LineMessagingNotifyEntity(NotifyEntity):
         self,
         hass: HomeAssistant,
         recipient_name: str,
+        friendly_name: str,
         user_id: str,
         token: str,
     ) -> None:
@@ -97,8 +104,10 @@ class LineMessagingNotifyEntity(NotifyEntity):
 
         Args:
             hass:           The HomeAssistant instance.
-            recipient_name: The human-friendly name chosen during setup
-                            (e.g. "Steve"). Used as the entity display name.
+            recipient_name: The ASCII entity name used for slugification
+                            (e.g. "David"). Used to derive the entity ID.
+            friendly_name:  The display name shown in the HA UI. May contain
+                            emoji and unicode (e.g. the LINE display name).
             user_id:        The LINE user ID (U + 32 hex chars) or group ID (C + 32 hex chars).
             token:          The channel access token used to authenticate
                             push message requests.
@@ -107,7 +116,7 @@ class LineMessagingNotifyEntity(NotifyEntity):
         self._recipient_name = recipient_name
         self._user_id = user_id
         self._token = token
-        self._attr_name = recipient_name
+        self._attr_name = friendly_name
         self._attr_unique_id = f"{DOMAIN}_{user_id}"
 
     async def async_send_message(
@@ -128,7 +137,7 @@ class LineMessagingNotifyEntity(NotifyEntity):
 
         def _fire_error(error_type: str, error_message: str, http_status: int | None = None) -> None:
             self.hass.bus.async_fire(
-                "line_bot_send_failed",
+                EVENT_SEND_FAILED,
                 {
                     "entity_id": entity_id,
                     "recipient_name": self._recipient_name,

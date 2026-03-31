@@ -11,7 +11,7 @@
       },
       "webhook_info": {
         "title": "Set Up Webhook",
-        "description": "Almost done. Copy the URL below and paste it into the LINE Developers Console.\n\n**Webhook URL:**\n`{webhook_url}`\n\n1. In the LINE Developers Console, open your channel's Messaging API tab.\n2. Under Webhook settings, paste the URL above.\n3. Enable Use webhook.\n4. Click Verify. It should return success.\n5. Tick the checkbox below and click Submit.\n\nAfter setup, add recipients via the Settings gear icon on the integration card.",
+        "description": "Almost done. Copy the URL below and paste it into the LINE Developers Console.\n\n**Webhook URL:**\n`{webhook_url}`\n\n1. In the LINE Developers Console, open your channel's Messaging API tab.\n2. Under Webhook settings, paste the URL above.\n3. Enable Use webhook.\n4. Click Verify. It should return success.\n5. Tick the checkbox below and click Submit.\n\nAfter setup is complete, add recipients via the Settings gear icon on the integration card.",
         "data": {
           "confirmed": "I have set the webhook URL and verified it successfully"
         }
@@ -40,7 +40,7 @@
         "description": "Select the person to add and give them a name in Home Assistant.",
         "data": {
           "user_id": "LINE Account",
-          "recipient_name": "Name in Home Assistant (e.g. Steve, Wife, Me)"
+          "recipient_name": "Name in Home Assistant (e.g. David, Greta, Coolio)"
         }
       },
       "remove_recipient": {
@@ -59,11 +59,13 @@
       },
       "select_recipient": {
         "title": "Select Recipient",
-        "description": "Select the person to add and give them a name in Home Assistant. Select '— Clear all pending —' to discard all captured accounts without adding them.",
+        "description": "Select the account to add. Enter an ASCII entity name for Home Assistant and an optional display name shown in the HA UI (supports emoji and any language). Select '[Clear all pending]' to discard all captured accounts.",
         "data": {
           "user_id": "LINE Account",
-          "recipient_name": "Name in Home Assistant (e.g. Steve, Wife, Me)",
-          "add_another": "Add another recipient after saving this one"
+          "recipient_name": "Name in Home Assistant (e.g. David, Greta, Coolio)",
+          "add_another": "Add another recipient after saving this one",
+          "friendly_name": "Display name (any language or emoji)",
+          "clear_pending": "[Clear all pending]"
         }
       }
     },
@@ -74,14 +76,13 @@
       "duplicate_user_id": "This LINE account has already been added.",
       "cannot_connect": "Failed to connect to LINE API. Check your network connection.",
       "invalid_name": "Name must contain only letters, numbers, spaces, hyphens and underscores. No emoji or non-English characters.",
-      "invalid_secret": "Channel secret cannot be empty.",
-      "name_required": "Name is required."
+      "invalid_secret": "Channel secret cannot be empty."
     },
     "abort": {
       "no_recipients": "There are no recipients to remove."
     },
     "progress": {
-      "waiting_for_message": "Have the recipient add your bot as a friend in LINE and send it any message. Once their message is received, this screen will automatically advance."
+      "waiting_for_message": "Have the recipient add your bot as a friend in LINE and send it any message. Once their message is received, this screen will automatically advance to the next step."
     }
   }
 }

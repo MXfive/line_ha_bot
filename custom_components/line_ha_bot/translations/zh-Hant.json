@@ -1,0 +1,88 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "LINE Bot",
+        "description": "請輸入您的 LINE Messaging API 憑證。兩者均可在 LINE Developers Console 中您頻道的「Basic settings」標籤下找到。",
+        "data": {
+          "channel_access_token": "頻道存取權杖",
+          "channel_secret": "頻道金鑰"
+        }
+      },
+      "webhook_info": {
+        "title": "設定 Webhook",
+        "description": "即將完成。請複製以下 URL 並貼到 LINE Developers Console。\n\n**Webhook URL:**\n`{webhook_url}`\n\n1. 在 LINE Developers Console 中，開啟頻道的「Messaging API」標籤。\n2. 在 Webhook settings 下，貼上上方的 URL。\n3. 啟用 Use webhook。\n4. 點擊「Verify」，應顯示成功。\n5. 勾選下方核取方塊，然後點擊「Submit」。\n\n設定完成後，可透過整合卡上的設定齒輪圖示新增收件人。",
+        "data": {
+          "confirmed": "我已設定 Webhook URL 並成功驗證"
+        }
+      }
+    },
+    "error": {
+      "invalid_token": "無法驗證頻道存取權杖。請檢查後重試。",
+      "invalid_secret": "頻道金鑰不可為空。",
+      "cannot_connect": "無法連線至 LINE API。請檢查您的網路連線。"
+    },
+    "abort": {
+      "already_configured": "LINE Bot 已完成設定。",
+      "no_external_url": "Home Assistant 未設定外部 URL。請至「設定」→「系統」→「網路」設定外部 URL 後重試。"
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "LINE 訊息選項",
+        "data": {
+          "action": "您想執行什麼操作？"
+        }
+      },
+      "add_recipient_select": {
+        "title": "新增收件人",
+        "description": "選擇要新增的對象並在 Home Assistant 中為其命名。",
+        "data": {
+          "user_id": "LINE 帳號",
+          "recipient_name": "在 Home Assistant 中的名稱（例如：大明、小花、阿志）"
+        }
+      },
+      "remove_recipient": {
+        "title": "移除收件人",
+        "data": {
+          "recipient_name": "要移除的收件人"
+        }
+      },
+      "rotate_token": {
+        "title": "更新憑證",
+        "description": "更新您的頻道存取權杖和/或頻道金鑰。兩個欄位均已預先填入目前的值。\n\n注意：頻道存取權杖會自動驗證。頻道金鑰無法透過 LINE API 驗證。若更新後收件人停止被偵測到，請再次確認您的頻道金鑰。",
+        "data": {
+          "channel_access_token": "頻道存取權杖",
+          "channel_secret": "頻道金鑰"
+        }
+      },
+      "select_recipient": {
+        "title": "選擇收件人",
+        "description": "選擇要新增的帳號。輸入 Home Assistant 的 ASCII 實體名稱，以及在 HA 介面中顯示的名稱（支援 emoji 和任何語言）。選擇「[清除所有待處理]」可捨棄所有已擷取的帳號。",
+        "data": {
+          "user_id": "LINE 帳號",
+          "recipient_name": "在 Home Assistant 中的名稱（例如：大明、小花、阿志）",
+          "add_another": "儲存此收件人後繼續新增另一位",
+          "friendly_name": "顯示名稱（任何語言或 emoji）",
+          "clear_pending": "[清除所有待處理]"
+        }
+      }
+    },
+    "error": {
+      "invalid_token": "無法驗證頻道存取權杖。請檢查後重試。",
+      "no_message_received": "尚未收到任何訊息。請確認對方已將您的 Bot 加為好友並傳送訊息，然後再次點擊「Submit」。",
+      "duplicate_name": "已存在相同名稱（或非常相似的名稱）的收件人。",
+      "duplicate_user_id": "此 LINE 帳號已被新增。",
+      "cannot_connect": "無法連線至 LINE API。請檢查您的網路連線。",
+      "invalid_name": "名稱只能包含英文字母、數字、空格、連字號和底線。不支援 emoji 或非英文字元。",
+      "invalid_secret": "頻道金鑰不可為空。"
+    },
+    "abort": {
+      "no_recipients": "沒有可移除的收件人。"
+    },
+    "progress": {
+      "waiting_for_message": "請讓收件人在 LINE 中將您的 Bot 加為好友並傳送任意訊息。收到訊息後，此畫面將自動進入下一步。"
+    }
+  }
+}
