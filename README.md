@@ -91,7 +91,7 @@ LINE requires your Home Assistant instance to be reachable from the internet via
 You have several options, listed from easiest to most technical:
 
 **Option A: Nabu Casa (easiest)**
-A Home Assistant Cloud subscription gives you a ready-made HTTPS domain with no configuration required. Costs approximately USD /month. See https://www.nabucasa.com.
+A Home Assistant Cloud subscription gives you a ready-made HTTPS domain with no configuration required. See https://www.nabucasa.com.
 
 **Option B: Cloudflare Tunnel (free)**
 Cloudflare Tunnel routes your local HA through Cloudflare's network, giving you a proper HTTPS domain for free. Install the **Cloudflare** add-on from the HA add-on store, create a free Cloudflare account, and follow the add-on instructions.
