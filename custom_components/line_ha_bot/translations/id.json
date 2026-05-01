@@ -35,14 +35,6 @@
           "action": "Apa yang ingin Anda lakukan?"
         }
       },
-      "add_recipient_select": {
-        "title": "Tambah Penerima",
-        "description": "Pilih orang yang akan ditambahkan dan beri nama di Home Assistant.",
-        "data": {
-          "user_id": "Akun LINE",
-          "recipient_name": "Nama di Home Assistant (mis. Budi, Siti, Andi)"
-        }
-      },
       "remove_recipient": {
         "title": "Hapus Penerima",
         "data": {
@@ -76,7 +68,8 @@
       "duplicate_user_id": "Akun LINE ini sudah ditambahkan.",
       "cannot_connect": "Gagal terhubung ke LINE API. Periksa koneksi jaringan Anda.",
       "invalid_name": "Nama hanya boleh mengandung huruf, angka, spasi, tanda hubung, dan garis bawah. Tidak ada emoji atau karakter non-Inggris.",
-      "invalid_secret": "Channel secret tidak boleh kosong."
+      "invalid_secret": "Channel secret tidak boleh kosong.",
+      "name_required": "Nama wajib diisi."
     },
     "abort": {
       "no_recipients": "Tidak ada penerima yang dapat dihapus."

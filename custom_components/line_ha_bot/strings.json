@@ -35,14 +35,6 @@
           "action": "What would you like to do?"
         }
       },
-      "add_recipient_select": {
-        "title": "Add Recipient",
-        "description": "Select the person to add and give them a name in Home Assistant.",
-        "data": {
-          "user_id": "LINE Account",
-          "recipient_name": "Name in Home Assistant (e.g. David, Greta, Coolio)"
-        }
-      },
       "remove_recipient": {
         "title": "Remove Recipient",
         "data": {
@@ -76,7 +68,8 @@
       "duplicate_user_id": "This LINE account has already been added.",
       "cannot_connect": "Failed to connect to LINE API. Check your network connection.",
       "invalid_name": "Name must contain only letters, numbers, spaces, hyphens and underscores. No emoji or non-English characters.",
-      "invalid_secret": "Channel secret cannot be empty."
+      "invalid_secret": "Channel secret cannot be empty.",
+      "name_required": "Name required."
     },
     "abort": {
       "no_recipients": "There are no recipients to remove."

@@ -1,13 +1,13 @@
 {
   "domain": "line_ha_bot",
   "name": "LINE Bot",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "config_flow": true,
   "documentation": "https://github.com/sfox38/line_ha_bot",
   "issue_tracker": "https://github.com/sfox38/line_ha_bot/issues",
-  "iot_class": "cloud_push",
+  "iot_class": "cloud_polling",
   "requirements": [],
-  "dependencies": [],
+  "dependencies": ["http"],
   "codeowners": [
     "@sfox38"
   ],

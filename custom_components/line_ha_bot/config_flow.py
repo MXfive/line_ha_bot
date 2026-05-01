@@ -19,7 +19,7 @@ Options flow steps (accessed via the gear icon on the integration card):
 
 Recipient storage format:
   Recipients are stored in the config entry data dict as:
-    {"name": {"user_id": "U...", "display_name": "...", "type": "user"}}
+    {"name": {"user_id": "U...", "display_name": "...", "friendly_name": "...", "type": "user"}}
   Groups use IDs starting with "C" and type "group". Users use IDs starting with
   "U" and type "user". The type is detected automatically from the LINE ID prefix.
 
@@ -137,7 +137,7 @@ def _name_slug_conflicts(name: str, existing_names: dict) -> bool:
 def _is_emoji(char: str) -> bool:
     """Return True if char is an emoji or pictographic symbol.
 
-    Uses the Unicode category and block ranges to detect emoji characters.
+    Uses Unicode block ranges to detect emoji characters.
     """
     cp = ord(char)
     return (
@@ -281,9 +281,9 @@ class LineMessagingOptionsFlow(config_entries.OptionsFlow):
     """Handle the options flow for LINE Bot (gear icon on the integration card).
 
     Provides three actions:
-      - Add a recipient:    Webhook-based capture flow with spinner.
-      - Remove a recipient: Dropdown of current recipients to delete.
-      - Update token:       Replace the Channel Access Token.
+      - Add a recipient:       Webhook-based capture flow with spinner.
+      - Remove a recipient:    Dropdown of current recipients to delete.
+      - Update credentials:    Replace the Channel Access Token and/or Channel Secret.
 
     All changes are saved to the config entry data dict. The update listener in
     __init__.py triggers a reload so notify entities reflect the new state.

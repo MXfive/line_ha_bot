@@ -35,14 +35,6 @@
           "action": "您想執行什麼操作？"
         }
       },
-      "add_recipient_select": {
-        "title": "新增收件人",
-        "description": "選擇要新增的對象並在 Home Assistant 中為其命名。",
-        "data": {
-          "user_id": "LINE 帳號",
-          "recipient_name": "在 Home Assistant 中的名稱（例如：大明、小花、阿志）"
-        }
-      },
       "remove_recipient": {
         "title": "移除收件人",
         "data": {
@@ -76,7 +68,8 @@
       "duplicate_user_id": "此 LINE 帳號已被新增。",
       "cannot_connect": "無法連線至 LINE API。請檢查您的網路連線。",
       "invalid_name": "名稱只能包含英文字母、數字、空格、連字號和底線。不支援 emoji 或非英文字元。",
-      "invalid_secret": "頻道金鑰不可為空。"
+      "invalid_secret": "頻道金鑰不可為空。",
+      "name_required": "名稱為必填項。"
     },
     "abort": {
       "no_recipients": "沒有可移除的收件人。"

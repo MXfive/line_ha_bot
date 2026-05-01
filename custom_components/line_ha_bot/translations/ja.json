@@ -35,14 +35,6 @@
           "action": "何をしますか？"
         }
       },
-      "add_recipient_select": {
-        "title": "受信者を追加",
-        "description": "追加する人を選択して、Home Assistantでの名前を設定してください。",
-        "data": {
-          "user_id": "LINEアカウント",
-          "recipient_name": "Home Assistantでの名前（例：田中、花子、太郎）"
-        }
-      },
       "remove_recipient": {
         "title": "受信者を削除",
         "data": {
@@ -76,7 +68,8 @@
       "duplicate_user_id": "このLINEアカウントはすでに追加されています。",
       "cannot_connect": "LINE APIへの接続に失敗しました。ネットワーク接続を確認してください。",
       "invalid_name": "名前には英数字、スペース、ハイフン、アンダースコアのみ使用できます。絵文字や非英語文字は使用できません。",
-      "invalid_secret": "チャネルシークレットは空にできません。"
+      "invalid_secret": "チャネルシークレットは空にできません。",
+      "name_required": "名前は必須です。"
     },
     "abort": {
       "no_recipients": "削除する受信者がいません。"

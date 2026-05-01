@@ -35,14 +35,6 @@
           "action": "คุณต้องการทำอะไร?"
         }
       },
-      "add_recipient_select": {
-        "title": "เพิ่มผู้รับ",
-        "description": "เลือกบุคคลที่ต้องการเพิ่มและตั้งชื่อใน Home Assistant",
-        "data": {
-          "user_id": "บัญชี LINE",
-          "recipient_name": "ชื่อใน Home Assistant (เช่น สมชาย, มาลี, น้องเล็ก)"
-        }
-      },
       "remove_recipient": {
         "title": "ลบผู้รับ",
         "data": {
@@ -76,7 +68,8 @@
       "duplicate_user_id": "บัญชี LINE นี้ถูกเพิ่มไปแล้ว",
       "cannot_connect": "ไม่สามารถเชื่อมต่อ LINE API ได้ ตรวจสอบการเชื่อมต่อเครือข่ายของคุณ",
       "invalid_name": "ชื่อต้องประกอบด้วยตัวอักษร ตัวเลข ช่องว่าง เครื่องหมายยัติภังค์ และขีดล่างเท่านั้น ไม่รองรับ emoji หรืออักขระที่ไม่ใช่ภาษาอังกฤษ",
-      "invalid_secret": "Channel Secret ต้องไม่ว่างเปล่า"
+      "invalid_secret": "Channel Secret ต้องไม่ว่างเปล่า",
+      "name_required": "จำเป็นต้องระบุชื่อ"
     },
     "abort": {
       "no_recipients": "ไม่มีผู้รับที่จะลบ"

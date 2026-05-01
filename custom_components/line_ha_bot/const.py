@@ -20,15 +20,11 @@ LINE_GROUP_SUMMARY_URL = "https://api.line.me/v2/bot/group/{group_id}/summary"
 # Path at which HA exposes the permanent webhook to LINE
 LINE_WEBHOOK_PATH = "/api/line_ha_bot/webhook"
 
-# LINE Bot info endpoint
-LINE_BOT_INFO_URL = "https://api.line.me/v2/bot/info"
-
 # hass.data[DOMAIN] keys
-RECIPIENTS_KEY = "recipients"        # Dict mapping HA name -> LINE user ID, stored in config entry
+RECIPIENTS_KEY = "recipients"        # Dict mapping HA name -> recipient details dict, stored in config entry
 PENDING_USERS_KEY = "pending_users"  # Temporary dict of user IDs captured by the webhook, not yet confirmed
-BOT_USER_ID_KEY = "bot_user_id"       # Cached bot user ID fetched from LINE at startup
 
-# notify.send_message service data attributes (optional, passed under the 'data' key)
+# line_ha_bot.send_message service data attributes (optional, passed under the 'data' key)
 ATTR_IMAGE_URL = "image_url"                # URL of an image to send after the text message
 ATTR_STICKER_PACKAGE_ID = "sticker_package_id"  # LINE sticker package ID
 ATTR_STICKER_ID = "sticker_id"              # LINE sticker ID within the package

@@ -86,7 +86,6 @@ from .const import (
     LINE_CONTENT_URL,
     LINE_PROFILE_URL,
     LINE_GROUP_SUMMARY_URL,
-    LINE_BOT_INFO_URL,
     LINE_PUSH_URL,
     LINE_REPLY_URL,
     LINE_WEBHOOK_PATH,
@@ -185,8 +184,9 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
           2. flex - if flex_message is set
           3. text only, then one of: image, location, audio, video, sticker
 
-        For reply token sends, uses the free Reply API. Otherwise uses Push API.
-        Fires line_bot_send_failed on any error. Supports multiple entity_id targets.
+        For reply token sends, uses the free Reply API for the first target only.
+        The reply token is consumed after one successful use; remaining targets
+        fall back to the Push API. Fires line_bot_send_failed on any error.
         """
         entity_ids = call.data.get("entity_id", [])
         if isinstance(entity_ids, str):
@@ -206,7 +206,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         location_longitude = call.data.get(ATTR_LOCATION_LONGITUDE)
         has_location = location_latitude is not None and location_longitude is not None
         audio_url = call.data.get(ATTR_AUDIO_URL)
-        audio_duration = call.data.get(ATTR_AUDIO_DURATION, 1)
+        audio_duration = call.data.get(ATTR_AUDIO_DURATION)
         video_url = call.data.get(ATTR_VIDEO_URL)
         video_preview_url = call.data.get(ATTR_VIDEO_PREVIEW_URL)
         template_type = call.data.get(ATTR_TEMPLATE_TYPE)
@@ -387,6 +387,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
             for name, r in entry.data.get(RECIPIENTS_KEY, {}).items()
         }
 
+        use_reply_token = reply_token
         for eid in entity_ids:
             user_id = eid_to_user_id.get(eid)
             if not user_id:
@@ -396,9 +397,9 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
                 )
                 continue
 
-            if reply_token:
+            if use_reply_token:
                 url = LINE_REPLY_URL
-                payload = {"replyToken": reply_token, "messages": messages}
+                payload = {"replyToken": use_reply_token, "messages": messages}
             else:
                 url = LINE_PUSH_URL
                 payload = {"to": user_id, "messages": messages}
@@ -411,6 +412,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
                     timeout=aiohttp.ClientTimeout(total=10),
                 ) as resp:
                     if resp.status == 200:
+                        use_reply_token = None
                         continue
                     body = await resp.text()
                     if resp.status == 401:
@@ -421,7 +423,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
                         _LOGGER.error(msg)
                         _fire_send_error(eid, user_id_to_name.get(user_id, eid), "token_invalid", msg, 401)
                     elif resp.status == 400:
-                        if reply_token:
+                        if use_reply_token:
                             msg = (
                                 "Reply token has expired or has already been used. "
                                 "Reply tokens are valid for 30 seconds and single-use only. "
@@ -437,7 +439,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
                         msg = f"HTTP {resp.status}: {body}"
                         _LOGGER.error(
                             "LINE Bot %s failed for %s: HTTP %s - %s",
-                            "reply" if reply_token else "push",
+                            "reply" if use_reply_token else "push",
                             eid, resp.status, body,
                         )
                         _fire_send_error(eid, user_id_to_name.get(user_id, eid), "http_error", msg, resp.status)
@@ -496,9 +498,9 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Unload a LINE Bot config entry.
 
-    Tears down the notify platform and removes per-entry runtime data. The
-    webhook view is intentionally left registered because HA does not support
-    unregistering HTTP views at runtime.
+    Tears down the notify and sensor platforms and removes per-entry runtime
+    data. The webhook view is intentionally left registered because HA does
+    not support unregistering HTTP views at runtime.
     """
     unload_ok = await hass.config_entries.async_unload_platforms(entry, PLATFORMS)
     if unload_ok:
@@ -550,7 +552,7 @@ async def _get_profile(hass: HomeAssistant, token: str, user_id: str) -> str | N
                 data = await resp.json()
                 return data.get("displayName", user_id)
             return None
-    except Exception:
+    except (aiohttp.ClientError, ValueError, KeyError):
         return None
 
 
@@ -569,24 +571,7 @@ async def _get_group_summary(hass: HomeAssistant, token: str, group_id: str) -> 
                 data = await resp.json()
                 return data.get("groupName")
             return None
-    except Exception:
-        return None
-
-
-async def _get_bot_info(hass: HomeAssistant, token: str) -> str | None:
-    """Fetch the bot's own LINE user ID from GET /v2/bot/info.
-
-    Returns the userId string on success, or None on failure.
-    """
-    session = async_get_clientsession(hass)
-    headers = {"Authorization": f"Bearer {token}"}
-    try:
-        async with session.get(LINE_BOT_INFO_URL, headers=headers) as resp:
-            if resp.status == 200:
-                data = await resp.json()
-                return data.get("userId")
-            return None
-    except Exception:
+    except (aiohttp.ClientError, ValueError, KeyError):
         return None
 
 
@@ -603,7 +588,7 @@ class LineMessagingWebhookView(HomeAssistantView):
 
     For known recipients (user or group):
       - message events fire line_bot_message_received with full payload including
-        content_url and message_id for media types (image, video, audio).
+        content_url and message_id for media types (image, video, audio, file).
       - postback events fire line_bot_message_received with postback_data.
       - Other event types (follow, unfollow, join, leave) are silently ignored.
 
@@ -752,6 +737,8 @@ class LineMessagingWebhookView(HomeAssistantView):
                             "recipient_name": recipient["name"],
                             "display_name": recipient["display_name"],
                             "message_text": None,
+                            "message_id": None,
+                            "content_url": None,
                             "postback_data": event.get("postback", {}).get("data"),
                             "reply_token": reply_token,
                             "timestamp": timestamp,

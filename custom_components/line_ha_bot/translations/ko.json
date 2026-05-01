@@ -35,14 +35,6 @@
           "action": "무엇을 하시겠습니까?"
         }
       },
-      "add_recipient_select": {
-        "title": "수신자 추가",
-        "description": "추가할 사람을 선택하고 Home Assistant에서 사용할 이름을 지정하세요.",
-        "data": {
-          "user_id": "LINE 계정",
-          "recipient_name": "Home Assistant에서의 이름 (예: 철수, 영희, 민준)"
-        }
-      },
       "remove_recipient": {
         "title": "수신자 제거",
         "data": {
@@ -76,7 +68,8 @@
       "duplicate_user_id": "이 LINE 계정은 이미 추가되어 있습니다.",
       "cannot_connect": "LINE API에 연결하지 못했습니다. 네트워크 연결을 확인하세요.",
       "invalid_name": "이름에는 영문자, 숫자, 공백, 하이픈, 밑줄만 사용할 수 있습니다. 이모지나 비영어 문자는 사용할 수 없습니다.",
-      "invalid_secret": "채널 시크릿은 비워둘 수 없습니다."
+      "invalid_secret": "채널 시크릿은 비워둘 수 없습니다.",
+      "name_required": "이름은 필수입니다."
     },
     "abort": {
       "no_recipients": "제거할 수신자가 없습니다."

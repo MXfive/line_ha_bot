@@ -26,6 +26,7 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers import entity_registry as er
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
+from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from .const import (
@@ -69,7 +70,7 @@ async def async_setup_entry(
 
     entities = [
         LineMessagingNotifyEntity(
-            hass, name, r.get("friendly_name", name), r["user_id"], token
+            hass, entry, name, r.get("friendly_name", name), r["user_id"], token
         )
         for name, r in recipients.items()
     ]
@@ -95,29 +96,25 @@ class LineMessagingNotifyEntity(NotifyEntity):
     def __init__(
         self,
         hass: HomeAssistant,
+        entry: ConfigEntry,
         recipient_name: str,
         friendly_name: str,
         user_id: str,
         token: str,
     ) -> None:
-        """Initialise the notify entity.
-
-        Args:
-            hass:           The HomeAssistant instance.
-            recipient_name: The ASCII entity name used for slugification
-                            (e.g. "David"). Used to derive the entity ID.
-            friendly_name:  The display name shown in the HA UI. May contain
-                            emoji and unicode (e.g. the LINE display name).
-            user_id:        The LINE user ID (U + 32 hex chars) or group ID (C + 32 hex chars).
-            token:          The channel access token used to authenticate
-                            push message requests.
-        """
+        """Initialise the notify entity."""
         self.hass = hass
         self._recipient_name = recipient_name
         self._user_id = user_id
         self._token = token
         self._attr_name = friendly_name
         self._attr_unique_id = f"{DOMAIN}_{user_id}"
+        self._attr_device_info = DeviceInfo(
+            identifiers={(DOMAIN, entry.entry_id)},
+            name="LINE HA Bot",
+            manufacturer="sfox38",
+            model="Messaging API",
+        )
 
     async def async_send_message(
         self,
