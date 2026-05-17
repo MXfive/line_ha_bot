@@ -20,6 +20,7 @@ from __future__ import annotations
 
 import logging
 import aiohttp
+from datetime import datetime, timezone
 
 from homeassistant.components.notify import NotifyEntity, NotifyEntityFeature
 from homeassistant.config_entries import ConfigEntry
@@ -92,6 +93,7 @@ class LineMessagingNotifyEntity(NotifyEntity):
 
     _attr_has_entity_name = True
     _attr_supported_features = NotifyEntityFeature.TITLE
+    _attr_state = "idle"
 
     def __init__(
         self,
@@ -109,10 +111,11 @@ class LineMessagingNotifyEntity(NotifyEntity):
         self._token = token
         self._attr_name = friendly_name
         self._attr_unique_id = f"{DOMAIN}_{user_id}"
+        self._attr_extra_state_attributes: dict = {}
         self._attr_device_info = DeviceInfo(
             identifiers={(DOMAIN, entry.entry_id)},
-            name="LINE HA Bot",
-            manufacturer="sfox38",
+            name="LINE Bot",
+            manufacturer="MXfive",
             model="Messaging API",
         )
 
@@ -129,8 +132,8 @@ class LineMessagingNotifyEntity(NotifyEntity):
         reply tokens) use the line_ha_bot.send_message service instead.
         Fires line_bot_send_failed on any error.
         """
-        import time
         entity_id = self.entity_id
+        now = datetime.now(timezone.utc).isoformat()
 
         def _fire_error(error_type: str, error_message: str, http_status: int | None = None) -> None:
             self.hass.bus.async_fire(
@@ -141,7 +144,7 @@ class LineMessagingNotifyEntity(NotifyEntity):
                     "error_type": error_type,
                     "error_message": error_message,
                     "http_status": http_status,
-                    "timestamp": int(time.time()),
+                    "timestamp": int(datetime.now(timezone.utc).timestamp()),
                 },
             )
 
@@ -163,6 +166,12 @@ class LineMessagingNotifyEntity(NotifyEntity):
                 timeout=aiohttp.ClientTimeout(total=10),
             ) as resp:
                 if resp.status == 200:
+                    self._attr_state = "sent"
+                    self._attr_extra_state_attributes = {
+                        "last_sent": now,
+                        "last_message": text[:255],
+                    }
+                    self.async_write_ha_state()
                     return
                 body = await resp.text()
                 if resp.status == 401:
@@ -171,16 +180,41 @@ class LineMessagingNotifyEntity(NotifyEntity):
                         "Please update your Channel Access Token via the integration options."
                     )
                     _LOGGER.error(msg)
+                    self._attr_state = "error"
+                    self._attr_extra_state_attributes = {
+                        "last_error": now,
+                        "error_type": "token_invalid",
+                    }
+                    self.async_write_ha_state()
                     _fire_error("token_invalid", msg, 401)
                 elif resp.status == 400:
                     msg = f"Bad request for {self._recipient_name} (check user ID and message format): {body}"
                     _LOGGER.error(msg)
+                    self._attr_state = "error"
+                    self._attr_extra_state_attributes = {
+                        "last_error": now,
+                        "error_type": "bad_request",
+                    }
+                    self.async_write_ha_state()
                     _fire_error("bad_request", msg, 400)
                 else:
                     msg = f"Push failed for {self._recipient_name}: HTTP {resp.status} - {body}"
                     _LOGGER.error(msg)
+                    self._attr_state = "error"
+                    self._attr_extra_state_attributes = {
+                        "last_error": now,
+                        "error_type": "http_error",
+                        "http_status": resp.status,
+                    }
+                    self.async_write_ha_state()
                     _fire_error("http_error", msg, resp.status)
         except aiohttp.ClientError as err:
             msg = str(err)
             _LOGGER.error("LINE Bot connection error for %s: %s", self._recipient_name, err)
+            self._attr_state = "error"
+            self._attr_extra_state_attributes = {
+                "last_error": now,
+                "error_type": "connection_error",
+            }
+            self.async_write_ha_state()
             _fire_error("connection_error", msg)
